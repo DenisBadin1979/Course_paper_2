@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, Mock
 from requests.exceptions import RequestException
-from src.job_search import Vacancys, HeadHunterAPI  # Замените your_module на имя вашего файла
+from src.job_search import Vacancys, HeadHunterAPI
 
 
 class Test_Vacancys(unittest.TestCase):
