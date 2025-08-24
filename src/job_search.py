@@ -43,7 +43,7 @@ class HeadHunterAPI(Vacancys):
 
         if self._Vacancys__connect_API():
             response = requests.get(self.__base_url, params=params)
-            response.raise_for_status()  # Проверка на ошибки HTTP
+            response.raise_for_status()
             data = response.json()
             return data.get("items", [])
         else:
@@ -59,7 +59,7 @@ if __name__ == '__main__':
 
     hh_api = HeadHunterAPI()
 
-    hh_vacancies = hh_api.get_vacancies("Python")
+    hh_vacancies = hh_api.get_vacancies("водитель")
 
 
     if hh_vacancies:
@@ -67,3 +67,5 @@ if __name__ == '__main__':
         print(hh_vacancies[0])
     else:
         print("Вакансии не найдены.")
+
+

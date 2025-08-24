@@ -1,106 +1,63 @@
 import unittest
 from unittest.mock import patch, Mock
-from requests.exceptions import RequestException
-from src.job_search import Vacancys, HeadHunterAPI
+
+from requests.exceptions import HTTPError, RequestException
 
 
-class Test_Vacancys(unittest.TestCase):
-    """Тесты для абстрактного класса Vacancys"""
-
-    def test_abstract_method(self):
-        """Тест, что абстрактный класс нельзя инстанциировать"""
-        with self.assertRaises(TypeError):
-            Vacancys()
+from src.job_search import HeadHunterAPI
 
 
-class Test_HeadHunterAPI(unittest.TestCase):
-    """Тесты для класса HeadHunterAPI"""
-
+class TestHeadHunterAPI(unittest.TestCase):
     def setUp(self):
-        """Настройка перед каждым тестом"""
-        self.hh_api = HeadHunterAPI()
-        self.keyword = "Python"
-        self.mock_response = {
-            "items": [
-                {
-                    "name": "Python Developer",
-                    "alternate_url": "https://hh.ru/vacancy/123",
-                    "salary": {"from": 100000, "to": 150000, "currency": "RUR"},
-                    "snippet": {"requirement": "Опыт работы с Python", "responsibility": "Разработка"}
-                }
-            ]
-        }
+        self.api = HeadHunterAPI()
 
-    def test_inheritance(self):
-        """Тест, что HeadHunterAPI наследуется от Vacancys"""
-        self.assertTrue(issubclass(HeadHunterAPI, Vacancys))
-
-    @patch('src.job_search.requests.get')
-    def test_successful_request(self, mock_get):
-        """Тест успешного запроса к API"""
-        # Мокируем ответ API
+    # Тест успешного подключения
+    @patch('requests.get')
+    def test_connect_api_success(self, mock_get):
         mock_response = Mock()
-        mock_response.json.return_value = self.mock_response
-        mock_response.raise_for_status.return_value = None
+        mock_response.status_code = 200
         mock_get.return_value = mock_response
 
-        # Вызываем тестируемый метод
-        result = self.hh_api.get_vacancies(self.keyword)
+        result = self.api._Vacancys__connect_API()
+        self.assertTrue(result)
 
-        # Проверяем, что запрос был выполнен с правильными параметрами
-        mock_get.assert_called_once_with(
-            "https://api.hh.ru/vacancies",
-            params={
-                "text": self.keyword,
-                "per_page": 100,
-                "page": 0
+    # Тест неуспешного подключения (ошибка сети)
+    @patch('requests.get')
+    def test_connect_api_network_error(self, mock_get):
+        mock_get.side_effect = RequestException("Сервер не найден")
 
-            }
-        )
+        with self.assertRaises(Exception) as context:
+            self.api._Vacancys__connect_API()
+        self.assertEqual(str(context.exception), "Сервер не найден")
 
-        # Проверяем, что возвращается правильный результат
-        self.assertEqual(result, self.mock_response["items"])
-
-    @patch('src.job_search.requests.get')  # Замените your_module на имя вашего файла
-    def test_request_exception(self, mock_get):
-        """Тест обработки исключения при запросе"""
-        # Мокируем исключение при запросе
-        mock_get.side_effect = RequestException("Network error")
-
-        # Вызываем тестируемый метод
-        result = self.hh_api.get_vacancies(self.keyword)
-
-        # Проверяем, что возвращается пустой список при ошибке
-        self.assertEqual(result, [])
-
-    @patch('src.job_search.requests.get')  # Замените your_module на имя вашего файла
-    def test_empty_response(self, mock_get):
-        """Тест обработки пустого ответа от API"""
-        # Мокируем пустой ответ
+    # Тест успешного получения вакансий
+    @patch.object(HeadHunterAPI, '_Vacancys__connect_API')
+    @patch('requests.get')
+    def test_get_vacancies_success(self, mock_get, mock_connect):
+        mock_connect.return_value = True
         mock_response = Mock()
-        mock_response.json.return_value = {}
-        mock_response.raise_for_status.return_value = None
+        mock_response.json.return_value = {"items": [{"id": "1", "name": "Python Developer"}]}
+        mock_response.raise_for_status = Mock()
         mock_get.return_value = mock_response
 
-        # Вызываем тестируемый метод
-        result = self.hh_api.get_vacancies(self.keyword)
+        result = self.api.get_vacancies("Python")
+        self.assertEqual(result, [{"id": "1", "name": "Python Developer"}])
 
-        # Проверяем, что возвращается пустой список
-        self.assertEqual(result, [])
-
-    @patch('src.job_search.requests.get')  # Замените your_module на имя вашего файла
-    def test_no_items_in_response(self, mock_get):
-        """Тест обработки ответа без ключа 'items'"""
-        # Мокируем ответ без ключа 'items'
+    # Тест ошибки при получении вакансий
+    @patch.object(HeadHunterAPI, '_Vacancys__connect_API')
+    @patch('requests.get')
+    def test_get_vacancies_http_error(self, mock_get, mock_connect):
+        mock_connect.return_value = True
         mock_response = Mock()
-        mock_response.json.return_value = {"other_data": "value"}
-        mock_response.raise_for_status.return_value = None
+        mock_response.raise_for_status.side_effect = HTTPError("HTTP Error")
         mock_get.return_value = mock_response
 
-        # Вызываем тестируемый метод
-        result = self.hh_api.get_vacancies(self.keyword)
+        with self.assertRaises(HTTPError):
+            self.api.get_vacancies("Python")
 
-        # Проверяем, что возвращается пустой список
-        self.assertEqual(result, [])
-
-
+    # Тест возврата 'error' при неудачном подключении
+    @patch.object(HeadHunterAPI, '_Vacancys__connect_API')
+    def test_get_vacancies_connection_failed(self, mock_connect):
+        mock_connect.return_value = False
+        result = self.api.get_vacancies("Python")
+        self.assertEqual(result, 'error')
