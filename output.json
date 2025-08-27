@@ -1,0 +1,9 @@
+[
+    {
+        "name_vac": "Тест 2",
+        "pay_vac": 50000,
+        "description_vac": "Desc2",
+        "requirements_vac": "Req2",
+        "url_vac": "htttp://test2.com"
+    }
+]

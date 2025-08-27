@@ -5,6 +5,8 @@ import requests
 
 class Vacancys (ABC):
     """Абстрактный класс для работы с API вакансий."""
+
+    @abstractmethod
     def __connect_API (self):
         """Создан метод для подключения к API"""
         pass
@@ -64,7 +66,8 @@ if __name__ == '__main__':
 
     if hh_vacancies:
         print(f"Найдено вакансий: {len(hh_vacancies)}")
-        print(hh_vacancies[0])
+        print(type(hh_vacancies))
+        print(hh_vacancies)
     else:
         print("Вакансии не найдены.")
 
