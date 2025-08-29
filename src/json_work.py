@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 import json
 
-from work__vacantion import Work_vacantion
+
+
 
 
 class Json_work(ABC):
@@ -12,7 +13,7 @@ class Json_work(ABC):
         pass
 
     @abstractmethod
-    def add_json(self):
+    def add_json(self, data_vac):
         """метод получения добавления данных в файл"""
         pass
 
@@ -34,11 +35,16 @@ class Json_file (Json_work):
             a = json.load(file)
         return a
 
+    def get_dict(self, vac):
+        obj_dict = {attr: getattr(vac, attr) for attr in dir(vac)
+                    if not attr.startswith('__') and not callable(getattr(vac, attr))}
+        return obj_dict
 
     def add_json(self, data_vac):
         """метод получения добавления данных в файл"""
         # list_vac = self.read_json()
-        dict_vac = data_vac.__str__()
+        dict_vac = self.get_dict(data_vac)
+        print(dict_vac)
         if dict_vac not in self.list_vac:
             self.list_vac.append(dict_vac)
         with open(self.__file_name, 'w', encoding='utf-8') as file:
@@ -48,37 +54,14 @@ class Json_file (Json_work):
 
     def delete_json(self):
         """метод удаления данных из файла."""
-        pass
+        a = []
+        with open (self.__file_name, 'w', encoding='utf-8') as file:
+            json.dump(a, file, ensure_ascii=False, indent=4)
 
 
 
-if __name__ == '__main__':
-
-    jas1 = Json_file('output.json')
 
 
-    vac = Work_vacantion('Тест',
-                         None,
-                         'Desc',
-                         'Req',
-                         'http://test.com')
-
-    vac2 = Work_vacantion('Тест 2',
-                         5000,
-                         'Desc 3',
-                         'Req 2',
-                         'http://test2.com')
-    vac3 = Work_vacantion('Тест 2',
-                          70000,
-                          'Desc 2',
-                          'Req 2',
-                          'http://test2.com')
-    jas1.add_json(vac)
-    jas1.add_json(vac2)
-    jas1.add_json(vac3)
-
-    jas1 = Json_file('output.json')
-    ee = jas1.read_json()
 
 
 

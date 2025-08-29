@@ -1,3 +1,4 @@
+from time import process_time
 
 
 class Work_vacantion:
@@ -26,10 +27,25 @@ class Work_vacantion:
         """"Метод сравнения данных по заработной плате self > other"""
         return self.pay_vac > other.pay_vac
 
-    def __str__(self):
-        vac_dict = {"name_vac" : self.name_vac,
+    def to_dict(self):
+        return {"name_vac" : self.name_vac,
                     "pay_vac" : self.pay_vac ,
                     "description_vac" : self.description_vac,
                     "requirements_vac" : self.requirements_vac,
                     "url_vac" : self.url_vac}
-        return vac_dict
+
+    # @property
+    # def upper_name(self):
+    #     return self.name_vac.upper()
+
+if __name__ == "__main__":
+    vac = Work_vacantion('Тест',
+                         5000,
+                         'Описание',
+                         'Требования',
+                         'http://test.com')
+
+    obj_dict = {attr: getattr(vac, attr) for attr in dir(vac)
+                if not attr.startswith('__') and not callable(getattr(vac, attr))}
+
+    print(obj_dict)  # {'name': 'test', 'upper_name': 'TEST'}

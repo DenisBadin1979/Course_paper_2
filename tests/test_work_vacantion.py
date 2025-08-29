@@ -83,6 +83,18 @@ class TestWorkVaction (unittest.TestCase):
             vac.non_existent_attr = 'Value'
 
 
+    def tes_str_vac(self):
+        vac = Work_vacantion('Тест',
+                             50000,
+                             'Desc',
+                             'Req',
+                             'http://test.com')
+        result = {'name_vac': 'Тест', 'pay_vac': 0,
+                  'description_vac': 'Desc',
+                  'requirements_vac': 'Req',
+                  'url_vac': 'http://test.com'}
+        self.assertEqual (vac.__str__(), result)
+
 
 
 
