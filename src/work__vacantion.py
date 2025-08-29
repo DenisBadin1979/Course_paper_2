@@ -26,10 +26,9 @@ class Work_vacantion:
         """"Метод сравнения данных по заработной плате self > other"""
         return self.pay_vac > other.pay_vac
 
-    def __str__(self):
-        vac_dict = {"name_vac" : self.name_vac,
+    def to_dict(self):
+        return {"name_vac" : self.name_vac,
                     "pay_vac" : self.pay_vac ,
                     "description_vac" : self.description_vac,
                     "requirements_vac" : self.requirements_vac,
                     "url_vac" : self.url_vac}
-        return vac_dict

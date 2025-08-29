@@ -38,7 +38,7 @@ class Json_file (Json_work):
     def add_json(self, data_vac):
         """метод получения добавления данных в файл"""
         # list_vac = self.read_json()
-        dict_vac = data_vac.__str__()
+        dict_vac = data_vac.to_dict
         if dict_vac not in self.list_vac:
             self.list_vac.append(dict_vac)
         with open(self.__file_name, 'w', encoding='utf-8') as file:
@@ -48,7 +48,9 @@ class Json_file (Json_work):
 
     def delete_json(self):
         """метод удаления данных из файла."""
-        pass
+        a = []
+        with open (self.__file_name, 'w', encoding='utf-8') as file:
+            json.dump(a, file, ensure_ascii=False, indent=4)
 
 
 
@@ -77,8 +79,9 @@ if __name__ == '__main__':
     jas1.add_json(vac2)
     jas1.add_json(vac3)
 
-    jas1 = Json_file('output.json')
-    ee = jas1.read_json()
+
+
+
 
 
 
