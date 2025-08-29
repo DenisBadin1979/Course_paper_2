@@ -80,8 +80,7 @@ if __name__ == '__main__':
     jas1 = Json_file('output.json')
     ee = jas1.read_json()
 
-    for i in ee:
-        print(i)
+
 
 
 
