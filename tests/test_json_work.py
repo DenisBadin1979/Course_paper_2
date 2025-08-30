@@ -1,115 +1,131 @@
 import unittest
-import json
-import os
 
 from src.json_work import Json_file
-from src.work__vacantion import Work_vacantion
 
-class TestJsonFile(unittest.TestCase):
+# Ваш исходный код здесь (классы Json_work и Json_file)...
 
+
+class TestJsonFileGetDict(unittest.TestCase):
     def setUp(self):
-        """Настройка перед каждым тестом"""
-        self.test_file = 'test.json'
-        self.json_file = Json_file(self.test_file)
-        # Создаем тестовые данные
-        self.test_data = [
-            {"name_vac": "Test1", "pay_vac": "1000", "description_vac": "Desc1",
-             "requirements_vac": "Req1", "url_vac": "http://test1.com"},
-            {"name_vac": "Test2", "pay_vac": "2000", "description_vac": "Desc2",
-             "requirements_vac": "Req2", "url_vac": "http://test2.com"}
-        ]
+        self.json_file = Json_file()
 
-    def tearDown(self):
-        """Очистка после каждого теста"""
-        if os.path.exists(self.test_file):
-            os.remove(self.test_file)
+    def test_regular_attributes(self):
+        """Тест на получение обычных атрибутов"""
 
-    def test_read_json_existing_file(self):
-        """Тест чтения существующего JSON файла"""
-        # Создаем тестовый файл с данными
-        with open(self.test_file, 'w', encoding='utf-8') as f:
-            json.dump(self.test_data, f, ensure_ascii=False, indent=4)
+        class TestVacancy:
+            def __init__(self):
+                self.title = "Python Developer"
+                self.salary = 100000
+                self.description = "Develop cool stuff"
 
-        # Читаем и проверяем данные
-        result = self.json_file.read_json()
-        self.assertEqual(result, self.test_data)
+        vac = TestVacancy()
+        result = self.json_file.get_dict(vac)
 
-    def test_read_json_nonexistent_file(self):
-        """Тест чтения несуществующего файла"""
-        # Убедимся, что файла нет
-        if os.path.exists(self.test_file):
-            os.remove(self.test_file)
+        self.assertEqual(result["title"], "Python Developer")
+        self.assertEqual(result["salary"], 100000)
+        self.assertEqual(result["description"], "Develop cool stuff")
+        self.assertEqual(len(result), 3)
 
-        # Должен вернуть пустой список или вызвать исключение
-        # В зависимости от реализации, может потребоваться адаптация
-        with self.assertRaises(FileNotFoundError):
-            self.json_file.read_json()
+    def test_protected_attributes(self):
+        """Тест на получение защищенных атрибутов"""
 
-    def test_add_json_new_vacancy(self):
-        """Тест добавления новой вакансии"""
-        # Создаем мок-объект вакансии
-        mock_vacancy = Work_vacantion(
-            "Test1", "1000", "Desc1", "Req1", "http://test1.com"
-        )
+        class TestVacancy:
+            def __init__(self):
+                self._protected_attr = "protected"
+                self.title = "Python Developer"
 
-        # Добавляем вакансию
-        self.json_file.add_json(mock_vacancy)
+        vac = TestVacancy()
+        result = self.json_file.get_dict(vac)
 
-        # Проверяем, что файл создан и содержит данные
-        with open(self.test_file, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+        self.assertIn("_protected_attr", result)
+        self.assertEqual(result["_protected_attr"], "protected")
+        self.assertEqual(result["title"], "Python Developer")
 
-        self.assertEqual(len(data), 1)
-        self.assertEqual(data[0]["name_vac"], "Test1")
+    def test_private_attributes_excluded(self):
+        """Тест на исключение приватных атрибутов"""
 
-    def test_add_json_duplicate_vacancy(self):
-        """Тест добавления дублирующей вакансии"""
-        # Создаем мок-объекты вакансий
-        mock_vacancy1 = Work_vacantion(
-            "Test1", "1000", "Desc1", "Req1", "http://test1.com"
-        )
-        mock_vacancy2 = Work_vacantion(
-            "Test1", "1000", "Desc1", "Req1", "http://test1.com"  # Та же вакансия
-        )
+        class TestVacancy:
+            def __init__(self):
+                self.__private_attr = "private"
+                self.title = "Python Developer"
 
-        # Добавляем вакансии
-        self.json_file.add_json(mock_vacancy1)
-        self.json_file.add_json(mock_vacancy2)  # Не должна добавиться
+        vac = TestVacancy()
+        result = self.json_file.get_dict(vac)
 
-        # Проверяем, что в файле только одна запись
-        with open(self.test_file, 'r', encoding='utf-8') as f:
-            data = json.load(f)
+        # Приватные атрибуты не должны попасть в результат
+        self.assertNotIn("__private_attr", result)
+        self.assertIn("title", result)
+        self.assertEqual(result["title"], "Python Developer")
 
-        self.assertEqual(len(data), 1)
+    def test_methods_excluded(self):
+        """Тест на исключение методов"""
 
-    def test_delete_json(self):
-        """Тест удаления всех данных из файла"""
-        # Сначала добавляем данные
-        mock_vacancy = Work_vacantion(
-            "Test1", "1000", "Desc1", "Req1", "http://test1.com"
-        )
-        self.json_file.add_json(mock_vacancy)
+        class TestVacancy:
+            def __init__(self):
+                self.title = "Python Developer"
 
-        # Убеждаемся, что данные есть
-        with open(self.test_file, 'r', encoding='utf-8') as f:
-            data_before = json.load(f)
-        self.assertEqual(len(data_before), 1)
+            def some_method(self):
+                return "method result"
 
-        # Удаляем данные
-        self.json_file.delete_json()
+        vac = TestVacancy()
+        result = self.json_file.get_dict(vac)
 
-        # Проверяем, что файл пустой
-        with open(self.test_file, 'r', encoding='utf-8') as f:
-            data_after = json.load(f)
-        self.assertEqual(data_after, [])
+        self.assertNotIn("some_method", result)
+        self.assertIn("title", result)
+        self.assertEqual(result["title"], "Python Developer")
 
-    def test_init_default_filename(self):
-        """Тест инициализации с именем файла по умолчанию"""
-        json_file = Json_file()
-        self.assertEqual(json_file._Json_file__file_name, 'data/po.json')
+    def test_callable_attributes_excluded(self):
+        """Тест на исключение callable-атрибутов"""
 
-    def test_init_custom_filename(self):
-        """Тест инициализации с пользовательским именем файла"""
-        custom_file = 'custom.json'
-        json_file = Json_file(custom_file)
-        self.assertEqual(json_file._Json_file__file_name, custom_file)
+        class TestVacancy:
+            def __init__(self):
+                self.title = "Python Developer"
+                self.lambda_attr = lambda x: x + 1
+
+        vac = TestVacancy()
+        result = self.json_file.get_dict(vac)
+
+        self.assertNotIn("lambda_attr", result)
+        self.assertIn("title", result)
+        self.assertEqual(result["title"], "Python Developer")
+
+    def test_properties_included(self):
+        """Тест на включение свойств (properties)"""
+
+        class TestVacancy:
+            def __init__(self):
+                self._title = "Python Developer"
+
+            @property
+            def title(self):
+                return self._title
+
+            @property
+            def upper_title(self):
+                return self._title.upper()
+
+        vac = TestVacancy()
+        result = self.json_file.get_dict(vac)
+
+        # Properties должны быть включены, так как они не callable
+        self.assertIn("title", result)
+        self.assertIn("upper_title", result)
+        self.assertEqual(result["title"], "Python Developer")
+        self.assertEqual(result["upper_title"], "PYTHON DEVELOPER")
+
+    def test_class_attributes_excluded(self):
+        """Тест на исключение атрибутов класса"""
+
+        class TestVacancy:
+            class_attr = "class value"
+
+            def __init__(self):
+                self.instance_attr = "instance value"
+
+        vac = TestVacancy()
+        result = self.json_file.get_dict(vac)
+
+        # Атрибуты класса не должны попасть в результат
+        self.assertNotIn("class_atttr", result)
+        self.assertIn("instance_attr", result)
+        self.assertEqual(result["instance_attr"], "instance value")

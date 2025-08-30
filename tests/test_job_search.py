@@ -1,8 +1,7 @@
 import unittest
-from unittest.mock import patch, Mock
+from unittest.mock import Mock, patch
 
 from requests.exceptions import HTTPError, RequestException
-
 
 from src.job_search import HeadHunterAPI
 
@@ -12,7 +11,7 @@ class TestHeadHunterAPI(unittest.TestCase):
         self.api = HeadHunterAPI()
 
     # Тест успешного подключения
-    @patch('requests.get')
+    @patch("requests.get")
     def test_connect_api_success(self, mock_get):
         mock_response = Mock()
         mock_response.status_code = 200
@@ -22,7 +21,7 @@ class TestHeadHunterAPI(unittest.TestCase):
         self.assertTrue(result)
 
     # Тест неуспешного подключения (ошибка сети)
-    @patch('requests.get')
+    @patch("requests.get")
     def test_connect_api_network_error(self, mock_get):
         mock_get.side_effect = RequestException("Сервер не найден")
 
@@ -31,8 +30,8 @@ class TestHeadHunterAPI(unittest.TestCase):
         self.assertEqual(str(context.exception), "Сервер не найден")
 
     # Тест успешного получения вакансий
-    @patch.object(HeadHunterAPI, '_Vacancys__connect_API')
-    @patch('requests.get')
+    @patch.object(HeadHunterAPI, "_Vacancys__connect_API")
+    @patch("requests.get")
     def test_get_vacancies_success(self, mock_get, mock_connect):
         mock_connect.return_value = True
         mock_response = Mock()
@@ -44,8 +43,8 @@ class TestHeadHunterAPI(unittest.TestCase):
         self.assertEqual(result, [{"id": "1", "name": "Python Developer"}])
 
     # Тест ошибки при получении вакансий
-    @patch.object(HeadHunterAPI, '_Vacancys__connect_API')
-    @patch('requests.get')
+    @patch.object(HeadHunterAPI, "_Vacancys__connect_API")
+    @patch("requests.get")
     def test_get_vacancies_http_error(self, mock_get, mock_connect):
         mock_connect.return_value = True
         mock_response = Mock()
@@ -56,8 +55,8 @@ class TestHeadHunterAPI(unittest.TestCase):
             self.api.get_vacancies("Python")
 
     # Тест возврата 'error' при неудачном подключении
-    @patch.object(HeadHunterAPI, '_Vacancys__connect_API')
+    @patch.object(HeadHunterAPI, "_Vacancys__connect_API")
     def test_get_vacancies_connection_failed(self, mock_connect):
         mock_connect.return_value = False
         result = self.api.get_vacancies("Python")
-        self.assertEqual(result, 'error')
+        self.assertEqual(result, "error")
