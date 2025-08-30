@@ -8,7 +8,7 @@ class Vacancys(ABC):
     """Абстрактный класс для работы с API вакансий."""
 
     @abstractmethod
-    def __connect_API(self) -> None:
+    def __connect_api(self) -> None:
         """Создан метод для подключения к API"""
         pass
 
@@ -27,7 +27,7 @@ class HeadHunterAPI(Vacancys):
     def __init__(self) -> None:
         self.__base_url = "https://api.hh.ru/vacancies"
 
-    def _Vacancys__connect_API(self) -> int | str:
+    def _Vacancys__connect_api(self) -> int | str:
         try:
             return requests.get(self.__base_url).status_code == 200
         except:
@@ -40,7 +40,7 @@ class HeadHunterAPI(Vacancys):
         """
         params = {"text": keyword, "per_page": 100, "page": 0}  # Количество результатов на странице  # Номер страницы
 
-        if self._Vacancys__connect_API():
+        if self._Vacancys__connect_api():
             response = requests.get(self.__base_url, params=params)
             response.raise_for_status()
             data = response.json()

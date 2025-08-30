@@ -17,7 +17,7 @@ class TestHeadHunterAPI(unittest.TestCase):
         mock_response.status_code = 200
         mock_get.return_value = mock_response
 
-        result = self.api._Vacancys__connect_API()
+        result = self.api._Vacancys__connect_api()
         self.assertTrue(result)
 
     # Тест неуспешного подключения (ошибка сети)
@@ -26,11 +26,11 @@ class TestHeadHunterAPI(unittest.TestCase):
         mock_get.side_effect = RequestException("Сервер не найден")
 
         with self.assertRaises(Exception) as context:
-            self.api._Vacancys__connect_API()
+            self.api._Vacancys__connect_api()
         self.assertEqual(str(context.exception), "Сервер не найден")
 
     # Тест успешного получения вакансий
-    @patch.object(HeadHunterAPI, "_Vacancys__connect_API")
+    @patch.object(HeadHunterAPI, "_Vacancys__connect_api")
     @patch("requests.get")
     def test_get_vacancies_success(self, mock_get, mock_connect):
         mock_connect.return_value = True
@@ -43,7 +43,7 @@ class TestHeadHunterAPI(unittest.TestCase):
         self.assertEqual(result, [{"id": "1", "name": "Python Developer"}])
 
     # Тест ошибки при получении вакансий
-    @patch.object(HeadHunterAPI, "_Vacancys__connect_API")
+    @patch.object(HeadHunterAPI, "_Vacancys__connect_api")
     @patch("requests.get")
     def test_get_vacancies_http_error(self, mock_get, mock_connect):
         mock_connect.return_value = True
@@ -55,7 +55,7 @@ class TestHeadHunterAPI(unittest.TestCase):
             self.api.get_vacancies("Python")
 
     # Тест возврата 'error' при неудачном подключении
-    @patch.object(HeadHunterAPI, "_Vacancys__connect_API")
+    @patch.object(HeadHunterAPI, "_Vacancys__connect_api")
     def test_get_vacancies_connection_failed(self, mock_connect):
         mock_connect.return_value = False
         result = self.api.get_vacancies("Python")

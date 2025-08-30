@@ -1,16 +1,23 @@
 import json
 from typing import Any
 
+from src.job_search import HeadHunterAPI
+from src.json_work import JsonFile
 
-def user_interaction() -> Any:
 
+def user_interaction(search_query) -> Any:
+    hh_api = HeadHunterAPI()
+    hh_vacancies = hh_api.get_vacancies(search_query)
+
+
+    jas = JsonFile()
     top_n = int(input("Введите количество вакансий для вывода в топ N: "))
     filter_words = input("Введите ключевые слова для фильтрации вакансий: ").split()
     salary_range = input("Введите диапазон зарплат: ")
-    file_name = input("Введите где находится список вакансий: ")
+    # file_name = input("Введите где находится список вакансий: ")
 
-    with open(file_name, "r", encoding="utf-8") as file:
-        vacancies_list = json.load(file)
+
+    vacancies_list = jas.read_json()
 
     filtered_vacancies = filter_vacancies(vacancies_list, filter_words)
 

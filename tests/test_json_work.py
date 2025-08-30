@@ -1,13 +1,13 @@
 import unittest
 
-from src.json_work import Json_file
+from src.json_work import JsonFile
 
 # Ваш исходный код здесь (классы Json_work и Json_file)...
 
 
 class TestJsonFileGetDict(unittest.TestCase):
     def setUp(self):
-        self.json_file = Json_file()
+        self.json_file = JsonFile()
 
     def test_regular_attributes(self):
         """Тест на получение обычных атрибутов"""

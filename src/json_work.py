@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 
-class Json_work(ABC):
+class JsonWork(ABC):
     """Абстрактный класс для работы с файлами"""
 
     @abstractmethod
@@ -22,7 +22,7 @@ class Json_work(ABC):
         pass
 
 
-class Json_file(Json_work):
+class JsonFile(JsonWork):
     def __init__(self, file_name: str = "data/po.json") -> None:
         self.__file_name = file_name
         self.list_vac = []
