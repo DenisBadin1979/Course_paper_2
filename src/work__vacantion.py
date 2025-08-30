@@ -34,18 +34,3 @@ class Work_vacantion:
                     "requirements_vac" : self.requirements_vac,
                     "url_vac" : self.url_vac}
 
-    # @property
-    # def upper_name(self):
-    #     return self.name_vac.upper()
-
-if __name__ == "__main__":
-    vac = Work_vacantion('Тест',
-                         5000,
-                         'Описание',
-                         'Требования',
-                         'http://test.com')
-
-    obj_dict = {attr: getattr(vac, attr) for attr in dir(vac)
-                if not attr.startswith('__') and not callable(getattr(vac, attr))}
-
-    print(obj_dict)  # {'name': 'test', 'upper_name': 'TEST'}
