@@ -3,11 +3,26 @@ from typing import Any
 
 from src.job_search import HeadHunterAPI
 from src.json_work import JsonFile
+from src.work__vacantion import Work_vacantion
 
 
 def user_interaction(search_query) -> Any:
     hh_api = HeadHunterAPI()
     hh_vacancies = hh_api.get_vacancies(search_query)
+    vac = []
+    for i in hh_vacancies:
+        nam = i.get('name')
+        if i.get('salary') == None:
+            salary = None
+        else:
+            if i.get('salary').get('to') != None:
+                salary = i.get('salary').get('to')
+            else:
+                salary = i.get('salary').get('from')
+        requirement = i.get('snippet').get('requirement')
+        description = i.get('snippet').get('responsibility')
+        url = i.get('area').get('url')
+        vac.append(Work_vacantion(nam, salary, description, requirement, url))
 
 
     jas = JsonFile()
@@ -15,6 +30,8 @@ def user_interaction(search_query) -> Any:
     filter_words = input("Введите ключевые слова для фильтрации вакансий: ").split()
     salary_range = input("Введите диапазон зарплат: ")
     # file_name = input("Введите где находится список вакансий: ")
+    for vac_i in vac:
+        jas.add_json(vac_i)
 
 
     vacancies_list = jas.read_json()
