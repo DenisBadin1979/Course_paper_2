@@ -49,7 +49,7 @@ def filter_vacancies(vacancies_list: list, filter_words: list) -> list:
     """Функция фильтрации вакансий по ключевому слову в описании вакансии"""
     new_list = []
     for v in vacancies_list:
-        description = v.get("description_vac", "").lower()
+        description =str(v.get("description_vac", "")).lower()
         # Проверяем, содержит ли описание хотя бы одно из ключевых слов
         if any(word.lower() in description for word in filter_words):
             new_list.append(v)
