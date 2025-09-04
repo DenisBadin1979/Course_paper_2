@@ -27,7 +27,7 @@ class HeadHunterAPI(Vacancys):
     def __init__(self) -> None:
         self.__base_url = "https://api.hh.ru/vacancies"
 
-    def _Vacancys__connect_api(self) -> int | str:
+    def _Vacancys__connect_api(self) -> int | str| Any:
         try:
             return requests.get(self.__base_url).status_code == 200
         except:

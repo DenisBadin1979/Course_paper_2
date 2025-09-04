@@ -1,4 +1,3 @@
-import json
 from typing import Any
 
 from src.job_search import HeadHunterAPI
@@ -6,24 +5,23 @@ from src.json_work import JsonFile
 from src.work__vacantion import Work_vacantion
 
 
-def user_interaction(search_query) -> Any:
+def user_interaction(search_query: str) -> Any:
     hh_api = HeadHunterAPI()
     hh_vacancies = hh_api.get_vacancies(search_query)
     vac = []
     for i in hh_vacancies:
-        nam = i.get('name')
-        if i.get('salary') == None:
+        nam = i.get("name")
+        if i.get("salary") == None:
             salary = None
         else:
-            if i.get('salary').get('to') != None:
-                salary = i.get('salary').get('to')
+            if i.get("salary").get("to") != None:
+                salary = i.get("salary").get("to")
             else:
-                salary = i.get('salary').get('from')
-        requirement = i.get('snippet').get('requirement')
-        description = i.get('snippet').get('responsibility')
-        url = i.get('area').get('url')
+                salary = i.get("salary").get("from")
+        requirement = i.get("snippet").get("requirement")
+        description = i.get("snippet").get("responsibility")
+        url = i.get("area").get("url")
         vac.append(Work_vacantion(nam, salary, description, requirement, url))
-
 
     jas = JsonFile()
     top_n = int(input("Введите количество вакансий для вывода в топ N: "))
@@ -32,7 +30,6 @@ def user_interaction(search_query) -> Any:
     # file_name = input("Введите где находится список вакансий: ")
     for vac_i in vac:
         jas.add_json(vac_i)
-
 
     vacancies_list = jas.read_json()
 
@@ -49,7 +46,7 @@ def filter_vacancies(vacancies_list: list, filter_words: list) -> list:
     """Функция фильтрации вакансий по ключевому слову в описании вакансии"""
     new_list = []
     for v in vacancies_list:
-        description =str(v.get("description_vac", "")).lower()
+        description = str(v.get("description_vac", "")).lower()
         # Проверяем, содержит ли описание хотя бы одно из ключевых слов
         if any(word.lower() in description for word in filter_words):
             new_list.append(v)
