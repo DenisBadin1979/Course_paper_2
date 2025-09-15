@@ -1,0 +1,23 @@
+[
+    {
+        "description_vac": "Desc",
+        "name_vac": "Тест",
+        "pay_vac": 0,
+        "requirements_vac": "Req",
+        "url_vac": "http://test.com"
+    },
+    {
+        "description_vac": "Desc 3",
+        "name_vac": "Тест 2",
+        "pay_vac": 5000,
+        "requirements_vac": "Req 2",
+        "url_vac": "http://test2.com"
+    },
+    {
+        "description_vac": "Desc 2",
+        "name_vac": "Тест 2",
+        "pay_vac": 70000,
+        "requirements_vac": "Req 2",
+        "url_vac": "http://test2.com"
+    }
+]
